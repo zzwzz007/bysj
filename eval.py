@@ -496,7 +496,7 @@ def setup_loader():
     else:
         test_sampler = None
 
-    test_loader = DataLoader(test_set, batch_size=batch_size, num_workers=args.num_workers,
+    test_loader = DataLoader(test_set, batch_size=batch_size, num_workers=0,
                              shuffle=False, drop_last=False, sampler = test_sampler)
 
     return test_loader

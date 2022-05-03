@@ -188,7 +188,7 @@ print('My Rank:', args.local_rank)
 # Initialize distributed communication
 args.dist_url = args.dist_url + str(8000 + (int(time.time()%1000))//10)
 
-torch.distributed.init_process_group(backend='nccl',
+torch.distributed.init_process_group(backend='gloo',
                                         init_method=args.dist_url,
                                         world_size=args.world_size, rank=args.local_rank)
 

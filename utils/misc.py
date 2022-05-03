@@ -74,6 +74,12 @@ def save_log(prefix, output_dir, date_str, rank=0):
     date_fmt = '%m-%d %H:%M:%S'
     filename = os.path.join(output_dir, prefix + '_' + date_str +'_rank_' + str(rank) +'.log')
     print("Logging :", filename)
+
+    # 删除已定义信息
+    root_logger = logging.getLogger()
+    for h in root_logger.handlers:
+        root_logger.removeHandler(h)
+
     logging.basicConfig(level=logging.INFO, format=fmt, datefmt=date_fmt,
                         filename=filename, filemode='w')
     console = logging.StreamHandler()

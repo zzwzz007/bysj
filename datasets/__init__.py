@@ -81,7 +81,7 @@ def setup_loaders(args):
         args.val_batch_size = args.bs_mult_val
 
     
-    args.num_workers = 8 #1 * args.ngpu
+    args.num_workers = 4 #1 * args.ngpu
     if args.test_mode:
         args.num_workers = 1
 
@@ -438,9 +438,9 @@ def setup_loaders(args):
         val_sampler = None
 
     train_loader = DataLoader(train_set, batch_size=args.train_batch_size,
-                              num_workers=args.num_workers, shuffle=(train_sampler is None), drop_last=True, sampler = train_sampler)
+                              num_workers=0, shuffle=(train_sampler is None), drop_last=True, sampler = train_sampler)
     val_loader = DataLoader(val_set, batch_size=args.val_batch_size,
-                            num_workers=args.num_workers // 2 , shuffle=False, drop_last=False, sampler = val_sampler)
+                            num_workers=0, shuffle=False, drop_last=False, sampler = val_sampler)
 
     return train_loader, val_loader,  train_set
 
