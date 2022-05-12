@@ -111,11 +111,15 @@ class DeepV3PlusHANet(nn.Module):
             prev_final_channel = 320
 
             final_channel = 1280
-            resnet = models.mobilenet_v2(pretrained=True)
-            # resnet = mbv2_ca()
-            # pretrain_path = "F:\HANet\pretrained\mbv2_canew.pth"
-            # resnet.load_state_dict(torch.load(pretrain_path))
-            # resnet = models.mobilenet_v2(pretrained=True)
+
+
+            if self.args.hanet[0] == 2:
+                resnet = mbv2_ca()
+                # pretrain_path = "F:\HANet\pretrained\mbv2_canew.pth"
+                pretrain_path = "./mbv2_canew.pth"
+                resnet.load_state_dict(torch.load(pretrain_path))
+            else:
+                resnet = models.mobilenet_v2(pretrained=True)
 
             self.layer0 = nn.Sequential(resnet.features[0],
                                         resnet.features[1])  # conv & 1

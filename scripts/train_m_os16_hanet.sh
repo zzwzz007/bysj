@@ -9,20 +9,20 @@
         --poly_exp 0.9 \
         --hanet_lr 0.01 \
         --hanet_poly_exp 0.9 \
-        --max_cu_epoch 10000 \
+        --max_cu_epoch 12 \
         --class_uniform_pct 0.5 \
         --class_uniform_tile 1024 \
         --syncbn \
         --sgd \
-        --crop_size 768 \
+        --crop_size 640 \
         --scale_min 0.5 \
         --scale_max 2.0 \
         --rrotate 0 \
         --color_aug 0.25 \
         --gblur \
-        --max_iter 40000 \
-        --bs_mult 8 \
-        --hanet 1 1 1 1 0 \
+        --max_iter 1900 \
+        --bs_mult 16 \
+        --hanet 0 0 1 1 0 \
         --hanet_set 3 16 3 \
         --hanet_pos 2 1 \
         --pos_rfactor 8 \
