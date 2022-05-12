@@ -97,14 +97,14 @@ def setup_loaders(args):
                                            pre_size=args.pre_size,
                                            scale_min=args.scale_min,
                                            scale_max=args.scale_max,
-                                           ignore_index=args.dataset_cls.ignore_label),
-        joint_transforms.Resize(args.crop_size),
-        joint_transforms.RandomHorizontallyFlip()]
+                                           ignore_index=args.dataset_cls.ignore_label),  # 随机缩放
+        joint_transforms.Resize(args.crop_size),  # 随机裁切
+        joint_transforms.RandomHorizontallyFlip()]  # 基于概率来执行图片的水平翻转
 
     if args.rrotate > 0:
         train_joint_transform_list += [joint_transforms.RandomRotate(
             degree=args.rrotate,
-            ignore_index=args.dataset_cls.ignore_label)]
+            ignore_index=args.dataset_cls.ignore_label)]  # 随机旋转
 
     train_joint_transform = joint_transforms.Compose(train_joint_transform_list)
 
@@ -115,12 +115,12 @@ def setup_loaders(args):
             brightness=args.color_aug,
             contrast=args.color_aug,
             saturation=args.color_aug,
-            hue=args.color_aug)]
+            hue=args.color_aug)]  # 随机调整图像的亮度，对比度，饱和度和色调。[1-arg,1+arg]
 
     if args.bblur:
         train_input_transform += [extended_transforms.RandomBilateralBlur()]
     elif args.gblur:
-        train_input_transform += [extended_transforms.RandomGaussianBlur()]
+        train_input_transform += [extended_transforms.RandomGaussianBlur()]  # 高斯滤波
     else:
         pass
 
