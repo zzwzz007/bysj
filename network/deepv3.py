@@ -1,11 +1,13 @@
 import logging
+from collections import OrderedDict
+
 import torch
 from torch import nn
 from network import Resnet
 from network.PosEmbedding import PosEmbedding2D
 from network.HANet import HANet_Conv
 from network.mynn import initialize_weights, Norm2d, Upsample, freeze_weights, unfreeze_weights, RandomPosVal_Masking, RandomVal_Masking, Zero_Masking, RandomPosZero_Masking
-from network.coordatt import MBV2_CA
+from network.coordatt import mbv2_ca
 
 import torchvision.models as models
 
@@ -109,20 +111,28 @@ class DeepV3PlusHANet(nn.Module):
             prev_final_channel = 320
 
             final_channel = 1280
-            resnet = MBV2_CA()
+            resnet = models.mobilenet_v2(pretrained=True)
+            # resnet = mbv2_ca()
+            # pretrain_path = "F:\HANet\pretrained\mbv2_canew.pth"
+            # resnet.load_state_dict(torch.load(pretrain_path))
+            # resnet = models.mobilenet_v2(pretrained=True)
+
             self.layer0 = nn.Sequential(resnet.features[0],
                                         resnet.features[1])  # conv & 1
             self.layer1 = nn.Sequential(resnet.features[2], resnet.features[3],
                                         resnet.features[4], resnet.features[5], resnet.features[6])  # 2&3
+
+
             self.layer2 = nn.Sequential(resnet.features[7], resnet.features[8],
                                         resnet.features[9], resnet.features[10])  # 4
-
+            # resnet = models.mobilenet_v2(pretrained=True)
             # self.layer3 = nn.Sequential(resnet.features[11], resnet.features[12], resnet.features[13], resnet.features[14], resnet.features[15], resnet.features[16])
             # self.layer4 = nn.Sequential(resnet.features[17], resnet.features[18])
 
             self.layer3 = nn.Sequential(resnet.features[11], resnet.features[12], resnet.features[13],
                                         resnet.features[14], resnet.features[15], resnet.features[16],
                                         resnet.features[17])  # 567
+            # self.layer4 = nn.Sequential(resnet.conv)  # conv
             self.layer4 = nn.Sequential(resnet.features[18])  # conv
 
             if self.variant == 'D':
@@ -234,7 +244,6 @@ class DeepV3PlusHANet(nn.Module):
     def forward(self, x, gts=None, aux_gts=None, pos=None, attention_map=False, attention_loss=False):
 
         x_size = x.size()  # 800
-
         x = self.layer0(x)  # 400
         x = self.layer1(x)  # 400
         low_level = x
@@ -278,11 +287,11 @@ class DeepV3PlusHANet(nn.Module):
             else:
                 dec0_up = self.hanet2(x, dec0_up, pos)
 
-        dec0_fine = self.bot_fine(low_level)
-        dec0_up = Upsample(dec0_up, low_level.size()[2:])
+        dec0_fine = self.bot_fine(low_level)  # 浅层特征边
+        dec0_up = Upsample(dec0_up, low_level.size()[2:]) # 上采样
         dec0 = [dec0_fine, dec0_up]
-        dec0 = torch.cat(dec0, 1)
-        dec1 = self.final1(dec0)
+        dec0 = torch.cat(dec0, 1)  # 堆叠 + 3x3卷积特征提取
+        dec1 = self.final1(dec0)  # 与浅层特征堆叠后利用卷积进行特征提取
 
         if self.args.hanet[3]==1:
             if attention_map:
@@ -301,7 +310,6 @@ class DeepV3PlusHANet(nn.Module):
                 dec2, last_attention = self.hanet4(dec1, dec2, pos, return_attention=False, return_posmap=False, attention_loss=True)
             else:
                 dec2 = self.hanet4(dec1, dec2, pos)
-
         main_out = Upsample(dec2, x_size[2:])
 
         if self.training:
@@ -342,7 +350,7 @@ def DeepMobileNetV3PlusD_HANet(args, num_classes, criterion, criterion_aux):
     """
     print("Model : DeepLabv3+, Backbone : mobilenetv2")
     return DeepV3PlusHANet(num_classes, trunk='mobilenetv2', criterion=criterion, criterion_aux=criterion_aux,
-                    variant='D16', skip='m1', args=args)
+                    variant='D', skip='m1', args=args)
 
 def DeepMobileNetV3PlusD_HANet_OS8(args, num_classes, criterion, criterion_aux):
     """
