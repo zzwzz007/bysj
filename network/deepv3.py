@@ -113,13 +113,14 @@ class DeepV3PlusHANet(nn.Module):
             final_channel = 1280
 
 
-            if self.args.hanet[0] == 2:
-                resnet = mbv2_ca()
-                # pretrain_path = "F:\HANet\pretrained\mbv2_canew.pth"
-                pretrain_path = "./mbv2_canew.pth"
-                resnet.load_state_dict(torch.load(pretrain_path))
-            else:
-                resnet = models.mobilenet_v2(pretrained=True)
+            # if self.args.hanet[0] == 2:
+            #     print("use pretrain")
+            #     resnet = mbv2_ca()
+            #     # pretrain_path = "F:\HANet\pretrained\mbv2_canew.pth"
+            #     pretrain_path = "./mbv2_canew.pth"
+            #     resnet.load_state_dict(torch.load(pretrain_path))
+            # else:
+            resnet = models.mobilenet_v2(pretrained=True)
 
             self.layer0 = nn.Sequential(resnet.features[0],
                                         resnet.features[1])  # conv & 1
@@ -354,7 +355,7 @@ def DeepMobileNetV3PlusD_HANet(args, num_classes, criterion, criterion_aux):
     """
     print("Model : DeepLabv3+, Backbone : mobilenetv2")
     return DeepV3PlusHANet(num_classes, trunk='mobilenetv2', criterion=criterion, criterion_aux=criterion_aux,
-                    variant='D', skip='m1', args=args)
+                    variant='D16', skip='m1', args=args)
 
 def DeepMobileNetV3PlusD_HANet_OS8(args, num_classes, criterion, criterion_aux):
     """
