@@ -22,7 +22,7 @@
         --gblur \
         --max_iter 3800 \
         --bs_mult 8 \
-        --hanet 0 0 1 1 0 \
+        --hanet 0 1 1 1 0 \
         --hanet_set 3 16 3 \
         --hanet_pos 2 1 \
         --pos_rfactor 8 \

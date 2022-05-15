@@ -114,13 +114,13 @@ class DeepV3PlusHANet(nn.Module):
 
 
             # if self.args.hanet[0] == 2:
-            #     print("use pretrain")
-            #     resnet = mbv2_ca()
-            #     # pretrain_path = "F:\HANet\pretrained\mbv2_canew.pth"
-            #     pretrain_path = "./mbv2_canew.pth"
-            #     resnet.load_state_dict(torch.load(pretrain_path))
+            print("use pretrain")
+            resnet = mbv2_ca()
+            # pretrain_path = "F:\HANet\pretrained\mbv2_canew.pth"
+            pretrain_path = "./mbv2_canew.pth"
+            resnet.load_state_dict(torch.load(pretrain_path))
             # else:
-            resnet = models.mobilenet_v2(pretrained=True)
+            # resnet = models.mobilenet_v2(pretrained=True)
 
             self.layer0 = nn.Sequential(resnet.features[0],
                                         resnet.features[1])  # conv & 1
@@ -137,8 +137,8 @@ class DeepV3PlusHANet(nn.Module):
             self.layer3 = nn.Sequential(resnet.features[11], resnet.features[12], resnet.features[13],
                                         resnet.features[14], resnet.features[15], resnet.features[16],
                                         resnet.features[17])  # 567
-            # self.layer4 = nn.Sequential(resnet.conv)  # conv
-            self.layer4 = nn.Sequential(resnet.features[18])  # conv
+            self.layer4 = nn.Sequential(resnet.conv)  # conv
+            # self.layer4 = nn.Sequential(resnet.features[18])  # conv
 
             if self.variant == 'D':
                 for n, m in self.layer2.named_modules():
