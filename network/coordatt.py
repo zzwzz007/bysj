@@ -156,9 +156,9 @@ class InvertedResidual(nn.Module):
             return y
 
 
-class MBV2_CA(nn.Module):
+class CANet(nn.Module):
     def __init__(self, num_classes=1000, width_mult=1.):
-        super(MBV2_CA, self).__init__()
+        super(CANet, self).__init__()
         logging.info("use ca block")
         # setting of inverted residual blocks
         self.cfgs = [
@@ -220,4 +220,4 @@ class MBV2_CA(nn.Module):
                 m.bias.data.zero_()
 
 def mbv2_ca(**kwargs):
-    return  MBV2_CA(**kwargs)
+    return  CANet(**kwargs)

@@ -56,7 +56,6 @@ class _AtrousSpatialPyramidPoolingModule(nn.Module):
             ))
         self.features = torch.nn.ModuleList(self.features)
 
-        # img level features
         self.img_pooling = nn.AdaptiveAvgPool2d(1)
         self.img_conv = nn.Sequential(
             nn.Conv2d(in_dim, 256, kernel_size=1, bias=False),
@@ -64,7 +63,7 @@ class _AtrousSpatialPyramidPoolingModule(nn.Module):
 
     def forward(self, x):
         x_size = x.size()
-
+        # global
         img_features = self.img_pooling(x)
         img_features = self.img_conv(img_features)
         img_features = Upsample(img_features, x_size[2:])
@@ -117,7 +116,7 @@ class DeepV3PlusHANet(nn.Module):
             print("use pretrain")
             resnet = mbv2_ca()
             # pretrain_path = "F:\HANet\pretrained\mbv2_canew.pth"
-            pretrain_path = "./mbv2_canew.pth"
+            pretrain_path = ".\mbv2_canew.pth"
             resnet.load_state_dict(torch.load(pretrain_path))
             # else:
             # resnet = models.mobilenet_v2(pretrained=True)
@@ -292,11 +291,11 @@ class DeepV3PlusHANet(nn.Module):
             else:
                 dec0_up = self.hanet2(x, dec0_up, pos)
 
-        dec0_fine = self.bot_fine(low_level)  # 浅层特征边
+        dec0_fine = self.bot_fine(low_level)  # 浅层特征边 shortcut_conv
         dec0_up = Upsample(dec0_up, low_level.size()[2:]) # 上采样
         dec0 = [dec0_fine, dec0_up]
         dec0 = torch.cat(dec0, 1)  # 堆叠 + 3x3卷积特征提取
-        dec1 = self.final1(dec0)  # 与浅层特征堆叠后利用卷积进行特征提取
+        dec1 = self.final1(dec0)  # 与浅层特征堆叠后利用卷积进行特征提取 cat_conv
 
         if self.args.hanet[3]==1:
             if attention_map:
